@@ -24,6 +24,10 @@ local function hideMessage()
 	panel = nil
 end
 
+local function leaveKeyboard()
+
+end
+
 net.Receive("wire_keyboard_activatemessage", function(netlen)
 	local on = net.ReadBit() ~= 0
 
@@ -43,19 +47,50 @@ net.Receive("wire_keyboard_activatemessage", function(netlen)
 		text = "Wire Keyboard turned on - press " .. leaveKeyName .. " to leave."
 	end
 
-	panel = vgui.Create("DShape") -- DPanel is broken for small sizes
-	panel:SetColor(Color(0, 0, 0, 192))
-	panel:SetType("Rect")
+	panel = vgui.Create("DFrame")
+	panel:SetPos(100, 100)
+	panel:SetSize(300, 200)
+	panel:SetTitle("Wire Keyboard")
+	panel:SetDraggable(true)
+	panel:DockPadding(10, 10, 10, 10)
 
 	local label = vgui.Create("DLabel", panel)
 	label:SetText(text)
-	label:SizeToContents()
+	label:Dock(FILL)
 
-	local padding = 3
-	label:SetPos(2 * padding, 2 * padding)
-	panel:SizeToChildren(true, true)
-	label:SetPos(padding, padding)
+	local hideButton = vgui.Create("DButton", panel)
+	hideButton:Dock(BOTTOM)
+	hideButton:SetText("Hide this message")
+	function hideButton:DoClick()
+		chat.AddText("Hide Button was clicked!")
+		hideMessage()
+	end
 
-	panel:CenterHorizontal()
-	panel:CenterVertical(0.95)
+	local leaveButton = vgui.Create("DButton", panel)
+	leaveButton:Dock(BOTTOM)
+	leaveButton:SetText("Leave keyboard")
+	function leaveButton:DoClick()
+		chat.AddText("Leave Button was clicked!")
+		leaveKeyboard()
+	end
+
+	panel:SetMouseInputEnabled(true)
+	--panel:SetKeyboardInputEnabled(true)
+	--panel:MakePopup()
 end)
+
+
+--[[
+Mode 1:
+- "dont show again"
+- alt to interact
+
+Mode 2:
+- old functionality if checkbox checked
+- checkbox reachable via control panel
+
+
+TODO:
+- Add "Don't show again" checkbox to dialog
+- Capture leavekey on client side
+]]
