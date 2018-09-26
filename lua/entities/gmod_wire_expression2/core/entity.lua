@@ -129,6 +129,21 @@ end
 // Functions getting vector
 e2function vector entity:pos()
 	if not IsValid(this) then return {0,0,0} end
+
+	-- The destination is blocked by an Asgard Jammer
+	for _, v in pairs(ents.FindInSphere(this:GetPos(), 1024)) do
+		if (IsValid(v) and v.CapJammingDevice) then
+			if (v.Enabled) then
+				local distance = this:GetPos():Distance(v:GetPos())
+				if (distance < v.Size) then
+					if not (v.Immunity or v.Owner == self.Owner) then
+						return {0,0,0}
+					end
+				end
+			end
+		end
+	end
+
 	return this:GetPos()
 end
 
@@ -614,12 +629,28 @@ end
 
 e2function vector entity:boxCenter()
 	if not IsValid(this) then return {0,0,0} end
+
 	return this:OBBCenter()
 end
 
 -- Same as using E:toWorld(E:boxCenter()) in E2, but since Lua runs faster, this is more efficient.
 e2function vector entity:boxCenterW()
 	if not IsValid(this) then return {0,0,0} end
+
+	-- The destination is blocked by an Asgard Jammer
+	for _, v in pairs(ents.FindInSphere(this:GetPos(), 1024)) do
+		if (IsValid(v) and v.CapJammingDevice) then
+			if (v.Enabled) then
+				local distance = this:GetPos():Distance(v:GetPos())
+				if (distance < v.Size) then
+					if not (v.Immunity or v.Owner == self.Owner) then
+						return {0,0,0}
+					end
+				end
+			end
+		end
+	end
+
 	return this:LocalToWorld(this:OBBCenter())
 end
 
@@ -778,9 +809,25 @@ end
 
 --- Returns <this>'s attachment position associated with <attachmentID>
 e2function vector entity:attachmentPos(attachmentID)
-	if not IsValid(this) then return { 0, 0, 0 } end
+	if not IsValid(this) then return {0, 0, 0} end
+	
 	local attachment = this:GetAttachment(attachmentID)
-	if not attachment then return { 0, 0, 0 } end
+	if not attachment then return {0, 0, 0} end
+
+	-- The destination is blocked by an Asgard Jammer
+	for _, v in pairs(ents.FindInSphere(attachment.Pos, 1024)) do
+		if (IsValid(v) and v.CapJammingDevice) then
+			if (v.Enabled) then
+				local distance = attachment.Pos:Distance(v:GetPos())
+				if (distance < v.Size) then
+					if not (v.Immunity or v.Owner == self.Owner) then
+						return {0,0,0}
+					end
+				end
+			end
+		end
+	end
+
 	return attachment.Pos
 end
 
