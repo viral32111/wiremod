@@ -64,7 +64,7 @@ function ENT:ShowOutput()
 	self:SetOverlayText( "Target Position = " .. tostring(self.TargetPos) .. "\nTarget Angle = " .. tostring(self.TargetAng) .. "\nSounds = " .. (self.UseSounds and "Yes" or "No") .. "\nEffects = " .. (self.UseEffects and "Yes" or "No") )
 end
 
-function ENT:Jump( withangles )
+function ENT:Jump(withangles)
 	--------------------------------------------------------------------
 	-- Check for errors
 	--------------------------------------------------------------------
@@ -75,7 +75,7 @@ function ENT:Jump( withangles )
 	end
 
 	-- The target position is outside the world
-	if (!util.IsInWorld( self.TargetPos )) then
+	if (!util.IsInWorld(self.TargetPos)) then
 		self:EmitSound("buttons/button8.wav")
 		return
 	end
@@ -86,7 +86,20 @@ function ENT:Jump( withangles )
 		return
 	end
 
-
+	-- The destination is blocked by an Asgard Jammer
+	for _, v in pairs(ents.FindInSphere(self.TargetPos, 1024)) do
+		if (IsValid(v) and v.CapJammingDevice) then
+			if (v.Enabled) then
+				local distance = self.TargetPos:Distance(v:GetPos())
+				if (distance < v.Size) then
+					if not (v.Immunity and v.Owner == self.Owner) then
+						self:EmitSound("buttons/button8.wav")
+						return
+					end
+				end
+			end
+		end
+	end
 
 	--------------------------------------------------------------------
 	-- Find other entities
