@@ -92,7 +92,7 @@ function ENT:Jump(withangles)
 			if (v.Enabled) then
 				local distance = self.TargetPos:Distance(v:GetPos())
 				if (distance < v.Size) then
-					if not (v.Immunity and v.Owner == self.Owner) then
+					if not (v.Immunity or v.Owner == self.Owner) then
 						self:EmitSound("buttons/button8.wav")
 						return
 					end
