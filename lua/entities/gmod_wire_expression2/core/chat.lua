@@ -38,6 +38,8 @@ hook.Add("PlayerSay","Exp2TextReceiving", function(ply, text, teamchat)
 	end
 	runByChat = 0
 
+	ply:SetNWBool("WireHideChat", hideCurrent) -- Added by viral32111
+
 	if hideCurrent then return "" end
 end)
 
